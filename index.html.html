@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FORGE GYM — Sculpt Your Legacy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --dark: #111111;
+      --card-bg: #161616;
+      --accent: #e8ff00;
+      --accent2: #ff4d1c;
+      --white: #f5f5f0;
+      --muted: #888880;
+      --border: rgba(255,255,255,0.08);
+      --radius: 4px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 6vw;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.85rem; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--accent); color: var(--black);
+      border: none; padding: 0.6rem 1.6rem;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border-radius: var(--radius); transition: background 0.2s;
+    }
+    .nav-cta:hover { background: #d4ea00; }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 0 6vw;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 70% 50%, #1a1a00 0%, transparent 60%),
+                  radial-gradient(ellipse 40% 50% at 30% 80%, rgba(255,77,28,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-grid-overlay {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .hero-content { position: relative; z-index: 2; }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(232,255,0,0.1); border: 1px solid rgba(232,255,0,0.25);
+      padding: 0.35rem 1rem; border-radius: 2rem;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem;
+    }
+    .hero-tag::before {
+      content: ''; width: 6px; height: 6px; background: var(--accent);
+      border-radius: 50%; animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 8vw, 7.5rem);
+      line-height: 0.9;
+      letter-spacing: 0.02em;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+    h1 span { color: var(--accent); }
+
+    .hero-sub {
+      font-size: 1.05rem; color: var(--muted); line-height: 1.7;
+      max-width: 480px; margin-bottom: 2.5rem;
+    }
+    .hero-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--accent); color: var(--black);
+      padding: 1rem 2.5rem; font-weight: 700;
+      font-size: 0.9rem; letter-spacing: 0.08em; text-transform: uppercase;
+      border: none; cursor: pointer; border-radius: var(--radius);
+      text-decoration: none; display: inline-block; transition: transform 0.15s, background 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); background: #d4ea00; }
+    .btn-outline {
+      border: 1px solid rgba(255,255,255,0.2); color: var(--white);
+      padding: 1rem 2.5rem; font-weight: 500;
+      font-size: 0.9rem; letter-spacing: 0.06em; text-transform: uppercase;
+      background: transparent; cursor: pointer; border-radius: var(--radius);
+      text-decoration: none; display: inline-block; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--white); }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 3.5rem;
+      padding-top: 2rem; border-top: 1px solid var(--border);
+    }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem; color: var(--accent); letter-spacing: 0.04em;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+    .hero-image {
+      position: relative; z-index: 2;
+      display: flex; justify-content: center; align-items: center;
+    }
+    .hero-img-wrapper {
+      width: 100%; max-width: 540px;
+      aspect-ratio: 3/4;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-img-wrapper img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(20%) contrast(1.1);
+    }
+    .hero-img-badge {
+      position: absolute; bottom: 1.5rem; left: 1.5rem; right: 1.5rem;
+      background: rgba(10,10,10,0.85); backdrop-filter: blur(8px);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 0.9rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .badge-text { font-size: 0.82rem; font-weight: 500; }
+    .badge-sub { font-size: 0.7rem; color: var(--muted); margin-top: 2px; }
+    .badge-icon {
+      width: 36px; height: 36px; background: var(--accent);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: var(--black); font-size: 1.1rem;
+    }
+
+    /* ─── SECTION COMMONS ─── */
+    section { padding: 7rem 6vw; }
+    .section-tag {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 0.8rem;
+    }
+    h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.03em; line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .section-lead {
+      color: var(--muted); font-size: 1rem; max-width: 520px; line-height: 1.7;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ─── SERVICES ─── */
+    #services { background: var(--dark); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+    }
+    .service-card {
+      background: var(--card-bg);
+      padding: 2.5rem 2rem;
+      transition: background 0.2s;
+      position: relative; overflow: hidden;
+    }
+    .service-card:hover { background: #1e1e1e; }
+    .service-card:hover .service-icon { background: var(--accent); color: var(--black); }
+    .service-icon {
+      width: 48px; height: 48px;
+      background: rgba(232,255,0,0.1);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.5rem;
+      transition: background 0.2s, color 0.2s;
+      color: var(--accent);
+    }
+    .service-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.04em; margin-bottom: 0.6rem;
+    }
+    .service-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── GALLERY ─── */
+    #gallery { background: var(--black); }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 300px 300px;
+      gap: 12px;
+    }
+    .gallery-item {
+      background: var(--card-bg);
+      border-radius: 6px; overflow: hidden;
+      position: relative;
+    }
+    .gallery-item:first-child { grid-row: span 2; }
+    .gallery-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(30%) brightness(0.85);
+      transition: filter 0.4s, transform 0.5s;
+    }
+    .gallery-item:hover img { filter: grayscale(0%) brightness(1); transform: scale(1.04); }
+    .gallery-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+      display: flex; align-items: flex-end; padding: 1.2rem;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-label {
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent);
+    }
+
+    /* ─── MEMBERSHIP ─── */
+    #membership { background: var(--dark); }
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .plan-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 2.5rem 2rem;
+      position: relative; transition: border-color 0.2s, transform 0.2s;
+    }
+    .plan-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.15); }
+    .plan-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(145deg, #161600, var(--card-bg));
+    }
+    .plan-badge {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--accent); color: var(--black);
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; padding: 0.3rem 1rem; border-radius: 2rem;
+    }
+    .plan-name {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 0.5rem;
+    }
+    .plan-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem; letter-spacing: 0.02em; line-height: 1;
+      color: var(--white);
+    }
+    .plan-price sup { font-size: 1.5rem; vertical-align: super; }
+    .plan-price span { font-size: 1rem; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 400; }
+    .plan-divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .plan-features { list-style: none; display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+    .plan-features li {
+      font-size: 0.88rem; color: var(--muted);
+      display: flex; gap: 0.6rem; align-items: flex-start;
+    }
+    .plan-features li::before {
+      content: '✓'; color: var(--accent); font-weight: 700; flex-shrink: 0;
+    }
+    .plan-features li.off { color: #444; }
+    .plan-features li.off::before { content: '✗'; color: #333; }
+    .plan-btn {
+      width: 100%; padding: 0.9rem;
+      font-family: 'DM Sans', sans-serif; font-size: 0.85rem;
+      font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; border-radius: var(--radius); transition: all 0.2s;
+    }
+    .plan-btn-outline {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+    }
+    .plan-btn-outline:hover { border-color: var(--white); color: var(--white); }
+    .plan-btn-filled { background: var(--accent); border: none; color: var(--black); }
+    .plan-btn-filled:hover { background: #d4ea00; }
+
+    /* ─── LOCATION ─── */
+    #location { background: var(--black); }
+    .location-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+    .map-placeholder {
+      aspect-ratio: 4/3; background: var(--card-bg);
+      border: 1px solid var(--border); border-radius: 8px;
+      overflow: hidden; position: relative;
+    }
+    .map-inner {
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.03) 39px, rgba(255,255,255,0.03) 40px);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0.5rem;
+    }
+    .map-pin {
+      width: 40px; height: 40px; background: var(--accent);
+      border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .map-pin::after {
+      content: ''; width: 16px; height: 16px; background: var(--black);
+      border-radius: 50%; transform: rotate(45deg);
+    }
+    .map-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+
+    .info-list { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 2.5rem; }
+    .info-item { display: flex; gap: 1rem; align-items: flex-start; }
+    .info-icon {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: rgba(232,255,0,0.08); border: 1px solid rgba(232,255,0,0.15);
+      border-radius: var(--radius); display: flex; align-items: center;
+      justify-content: center; font-size: 1rem; color: var(--accent);
+    }
+    .info-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.2rem; }
+    .info-value { font-size: 0.95rem; font-weight: 500; }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--dark); }
+    .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: start; }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--card-bg); border: 1px solid var(--border);
+      color: var(--white); padding: 0.85rem 1rem;
+      font-family: 'DM Sans', sans-serif; font-size: 0.92rem;
+      border-radius: var(--radius); outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #444; }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: rgba(232,255,0,0.4); }
+    .form-group select option { background: var(--dark); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+
+    .contact-info h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem; letter-spacing: 0.04em; margin-bottom: 0.5rem;
+    }
+    .contact-info p { color: var(--muted); font-size: 0.95rem; line-height: 1.7; margin-bottom: 2.5rem; }
+    .socials { display: flex; gap: 0.75rem; margin-top: 2rem; }
+    .social-link {
+      width: 44px; height: 44px;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--muted); text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .social-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid var(--border);
+      padding: 3rem 6vw;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; color: var(--accent); letter-spacing: 0.08em;
+    }
+    .footer-text { font-size: 0.8rem; color: var(--muted); }
+    .footer-links { display: flex; gap: 2rem; list-style: none; }
+    .footer-links a {
+      text-decoration: none; font-size: 0.8rem; color: var(--muted);
+      transition: color 0.2s; letter-spacing: 0.06em;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding-top: 8rem; gap: 3rem; }
+      .hero-image { display: none; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 220px 220px 220px; }
+      .gallery-item:first-child { grid-row: span 1; }
+      .location-layout, .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 3.5rem; }
+      .hero-stats { gap: 1.5rem; }
+      .nav-links { display: none; }
+      .gallery-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 220px); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">FORGE</div>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#gallery">Gallery</a></li>
+      <li><a href="#membership">Membership</a></li>
+      <li><a href="#location">Location</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button class="nav-cta" onclick="document.getElementById('membership').scrollIntoView({behavior:'smooth'})">Join Now</button>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Est. 2018 · Premium Training</div>
+      <h1>SCULPT<br/>YOUR<br/><span>LEGACY</span></h1>
+      <p class="hero-sub">
+        Forge is not just a gym. It's where limits are broken, physiques are built, and champions are made — with elite equipment and world-class coaching.
+      </p>
+      <div class="hero-actions">
+        <a href="#membership" class="btn-primary">Start Today</a>
+        <a href="#services" class="btn-outline">Explore Services</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="stat-num">1,200+</div>
+          <div class="stat-label">Active Members</div>
+        </div>
+        <div>
+          <div class="stat-num">18</div>
+          <div class="stat-label">Expert Coaches</div>
+        </div>
+        <div>
+          <div class="stat-num">5★</div>
+          <div class="stat-label">Rated Facility</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="hero-img-wrapper">
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=700&q=80" alt="Gym training" />
+        <div class="hero-img-badge">
+          <div>
+            <div class="badge-text">Morning Classes</div>
+            <div class="badge-sub">6:00 AM — 7 days/week</div>
+          </div>
+          <div class="badge-icon">⚡</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-tag">What We Offer</div>
+    <h2>Our Services</h2>
+    <p class="section-lead">From high-intensity training to mindful recovery — every program is designed around your goals.</p>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">💪</div>
+        <div class="service-title">Strength & Conditioning</div>
+        <p class="service-desc">Olympic lifting platforms, power racks, free weights, and smart programming to maximize your strength gains.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🔥</div>
+        <div class="service-title">HIIT & Cardio</div>
+        <p class="service-desc">High-intensity interval sessions designed to torch calories, boost metabolism, and build cardiovascular endurance fast.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🥊</div>
+        <div class="service-title">Combat Fitness</div>
+        <p class="service-desc">Boxing, kickboxing, and MMA conditioning classes led by former professional fighters. All levels welcome.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🧘</div>
+        <div class="service-title">Yoga & Recovery</div>
+        <p class="service-desc">Dedicated recovery studio with yoga, stretch therapy, foam rolling zones, and guided breathwork sessions.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">👤</div>
+        <div class="service-title">Personal Training</div>
+        <p class="service-desc">One-on-one sessions with certified coaches who build plans tailored to your exact physiology and timeline.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🥗</div>
+        <div class="service-title">Nutrition Coaching</div>
+        <p class="service-desc">Customized meal plans, macro tracking, and ongoing diet coaching to fuel performance and accelerate results.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="section-tag">Inside Forge</div>
+    <h2>The Facility</h2>
+    <p class="section-lead">10,000 sq ft of elite equipment across three floors. Built for serious athletes and motivated beginners alike.</p>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&q=80" alt="Main gym floor" />
+        <div class="gallery-overlay"><div class="gallery-label">Main Floor</div></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80" alt="Cardio zone" />
+        <div class="gallery-overlay"><div class="gallery-label">Cardio Zone</div></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=600&q=80" alt="Boxing ring" />
+        <div class="gallery-overlay"><div class="gallery-label">Combat Studio</div></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80" alt="Weights area" />
+        <div class="gallery-overlay"><div class="gallery-label">Free Weights</div></div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&q=80" alt="Yoga studio" />
+        <div class="gallery-overlay"><div class="gallery-label">Yoga Studio</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMBERSHIP -->
+  <section id="membership">
+    <div class="section-tag">Pricing Plans</div>
+    <h2>Membership</h2>
+    <p class="section-lead">Transparent pricing. No contracts. Cancel anytime. Pick the plan that fits your training life.</p>
+    <div class="plans-grid">
+
+      <div class="plan-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price"><sup>₹</sup>999<span>/mo</span></div>
+        <hr class="plan-divider" />
+        <ul class="plan-features">
+          <li>Gym access (6AM–10PM)</li>
+          <li>Cardio & weights floor</li>
+          <li>Locker access</li>
+          <li>2 group classes/week</li>
+          <li class="off">Personal trainer sessions</li>
+          <li class="off">Nutrition coaching</li>
+          <li class="off">Guest passes</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline">Get Started</button>
+      </div>
+
+      <div class="plan-card featured">
+        <div class="plan-badge">Most Popular</div>
+        <div class="plan-name">Elite</div>
+        <div class="plan-price"><sup>₹</sup>2,499<span>/mo</span></div>
+        <hr class="plan-divider" />
+        <ul class="plan-features">
+          <li>24/7 gym access</li>
+          <li>All floors & studios</li>
+          <li>Unlimited group classes</li>
+          <li>4 PT sessions/month</li>
+          <li>Nutrition consultation</li>
+          <li>2 guest passes/month</li>
+          <li class="off">Priority class booking</li>
+        </ul>
+        <button class="plan-btn plan-btn-filled">Join Elite</button>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-name">Champion</div>
+        <div class="plan-price"><sup>₹</sup>4,999<span>/mo</span></div>
+        <hr class="plan-divider" />
+        <ul class="plan-features">
+          <li>24/7 VIP access</li>
+          <li>Unlimited everything</li>
+          <li>8 PT sessions/month</li>
+          <li>Monthly body composition scan</li>
+          <li>Custom meal planning</li>
+          <li>Priority class booking</li>
+          <li>5 guest passes/month</li>
+        </ul>
+        <button class="plan-btn plan-btn-outline">Go Champion</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LOCATION -->
+  <section id="location">
+    <div class="location-layout">
+      <div class="map-placeholder">
+        <div class="map-inner">
+          <div class="map-pin"></div>
+          <div class="map-label">Forge Gym, Kukatpally, Hyderabad</div>
+        </div>
+      </div>
+      <div>
+        <div class="section-tag">Find Us</div>
+        <h2>Our Location</h2>
+        <p class="section-lead">Centrally located in Kukatpally with free parking, easily accessible from KPHB Colony, Balanagar, and HITEC City.</p>
+        <div class="info-list">
+          <div class="info-item">
+            <div class="info-icon">📍</div>
+            <div>
+              <div class="info-label">Address</div>
+              <div class="info-value">Plot 42, Kukatpally Housing Board, Hyderabad, Telangana 500072</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🕐</div>
+            <div>
+              <div class="info-label">Hours</div>
+              <div class="info-value">Mon–Fri: 5:00 AM – 11:00 PM &nbsp;|&nbsp; Sat–Sun: 6:00 AM – 9:00 PM</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📞</div>
+            <div>
+              <div class="info-label">Phone</div>
+              <div class="info-value">+91 98765 43210</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">✉️</div>
+            <div>
+              <div class="info-label">Email</div>
+              <div class="info-value">hello@forgegym.in</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-layout">
+      <div class="contact-info">
+        <div class="section-tag">Get in Touch</div>
+        <h3>Drop Us a Message</h3>
+        <p>Whether you're curious about pricing, want a tour, or have a specific training goal — we're here to help you take the first step.</p>
+        <div class="info-list">
+          <div class="info-item">
+            <div class="info-icon">⚡</div>
+            <div>
+              <div class="info-label">Response Time</div>
+              <div class="info-value">Within 2 business hours</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🎯</div>
+            <div>
+              <div class="info-label">Free Trial</div>
+              <div class="info-value">Mention this site for a free 3-day trial pass</div>
+            </div>
+          </div>
+        </div>
+        <div class="socials">
+          <a href="#" class="social-link">𝕏</a>
+          <a href="#" class="social-link">in</a>
+          <a href="#" class="social-link">📸</a>
+          <a href="#" class="social-link">▶</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="contact-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name</label>
+              <input type="text" placeholder="Arjun" />
+            </div>
+            <div class="form-group">
+              <label>Last Name</label>
+              <input type="text" placeholder="Sharma" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="arjun@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" placeholder="+91 98765 43210" />
+          </div>
+          <div class="form-group">
+            <label>I'm Interested In</label>
+            <select>
+              <option value="">Select a service</option>
+              <option>General Membership</option>
+              <option>Personal Training</option>
+              <option>Group Classes</option>
+              <option>Nutrition Coaching</option>
+              <option>Gym Tour</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea placeholder="Tell us about your fitness goals..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%; padding:1.1rem;" onclick="alert('Message sent! We\'ll get back to you within 2 hours.')">
+            Send Message →
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">FORGE</div>
+    <p class="footer-text">© 2025 Forge Gym, Hyderabad. All rights reserved by Mohammed Ahmed.</p>
+    <ul class="footer-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#membership">Pricing</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>
